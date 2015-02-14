@@ -11,17 +11,21 @@
       <div class="collisions">Collisions: <span id="collisions">0</span></div>
     </div>
     <svg class="board" width="700" height="700">
+      <filter id="rock" x="0%" y="0%" width="100%" height="100%">
+          <feImage xlink:href="asteroid.png"/>
+      </filter>
+
+        <!-- <defs>
+          <pattern id="asteroid" x="-25" y="-25" height="1" width="1" patternUnits="userSpaceOnUse">
+          <image x="" y="0" height="50" width="50" xlink:href="asteroid_small.png"></image>
+          </pattern>
+        </defs>
+          <circle cx="150" cy="50" r="25" fill="url(#asteroid)"/>
+          <circle cx="350" cy="170" r="25" fill="url(#asteroid)"/> -->
+      <circle cx="550" cy="250" r="100" filter="url(#rock)"/>
 
     </svg>
     <script src="d3.js" charset="utf-8"></script>
     <script src='watchout.js'></script>
   </body>
 </html>
-<!--         <defs>
-          <pattern id="asteroid" x="0" y="0" height="40" width="40" patternUnits="userSpaceOnUse">
-          <image x="10" y="-5" height="40" width="40" xlink:href="asteroid_small.png"></image>
-          </pattern>
-        </defs>
-
-        <circle cx="150" cy="50" r="25" fill="url(#asteroid)"/>
- -->

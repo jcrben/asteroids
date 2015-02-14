@@ -15,7 +15,7 @@ var score = 0;
 var collision = 0;
 var highScore = 0;
 var board = d3.select('.board');
-
+// d3.range(50)
 var setBoard = function(asteroids){
 var enemies = board.selectAll()
       .data(asteroids)
@@ -29,7 +29,8 @@ var enemies = board.selectAll()
         return d[0];
       })
       .attr('r', '25')
-      .attr('fill', 'red');
+      .attr('filter', 'url(#rock)');
+      // .attr();
 
 
 var drag = d3.behavior.drag()
@@ -105,7 +106,7 @@ var transition = function(arr){
       return d[0];
     })
     .attr('r', '25')
-    .attr('fill', 'red');
+    .attr('filter', 'url(#rock)');
 }
 var createPlayer = function() {
   return [[Math.floor((window.innerHeight-20)/2),
