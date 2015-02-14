@@ -9,7 +9,19 @@
       <div class="high">High score: <span id="high">0</span></div>
       <div class="current">Current score: <span id="current">0</span></div>
       <div class="collisions">Collisions: <span id="collisions">0</span></div>
-      <div><input id="enemies" type="text" value="10"/></div>
+      <div>
+        <label for="enemies" style="font-weight:bold;">Hardness scale: <span id="hardnessAmount">10</span></label>
+      </div>
+      <div>
+        <input id="enemies" type="range" min="1" max="100" step="1" value="10"/>
+      </div>
+      <div>
+        <label for="ammu" style="font-weight:bold;">Ammunition scale: <span id="ammuAmount">Unlimited</span></label>
+      </div>
+
+      <div>
+        <input id="ammu" type="range" min="-1" max="100" step="1" value="-1">
+      </div>
     </div>
     <svg class="board" width="700" height="700">
       <filter id="rock" x="0%" y="0%" width="100%" height="100%">

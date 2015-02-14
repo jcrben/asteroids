@@ -8,13 +8,17 @@ var Game = function(){
   this.player = undefined;
   this.lazer = undefined;
   this.num = 10;
+  this.ammu = -1;
   this.setBoard(this.createAsteroids(this.num));
   this.change();
 
   var fn = function(e) {
     if(e.which === 32){
       if(this.lazer !== undefined){
-        if(d3.selectAll('.lazer')[0].length > -1){
+
+        if(this.ammu === -1){
+          this.fireLazer();
+        }else if(d3.selectAll('.lazer')[0].length < this.ammu){
           this.fireLazer();
         }
       }else{
@@ -149,6 +153,19 @@ Game.prototype.setBoard = function(asteroids){
     d3.select('#current').text(context.score);
     d3.select('#collisions').text(context.collision);
     d3.select('#high').text(context.highScore);
+    context.ammu = parseInt(d3.select('#ammu')[0][0].value);
+
+    console.log(context.ammu);
+
+    if(context.ammu === -1){
+      d3.select('#ammuAmount').text('Unlimited');
+    }else if (parseInt(context.ammu) === 0){
+      d3.select('#ammuAmount').text('None');
+    }else {
+      d3.select('#ammuAmount').text(parseInt(context.ammu));
+    }
+    d3.select('#hardnessAmount').text(context.num);
+
     context.score++;
     return false;
   });
