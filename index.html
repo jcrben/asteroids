@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel='stylesheet' type='css' href='styles.css'> 
+    <link rel='stylesheet' type='css' href='styles.css'>
   </head>
   <body>
     <div class="scoreboard">
@@ -10,7 +10,18 @@
       <div class="current">Current score: <span>0</span></div>
       <div class="collisions">Collisions: <span>0</span></div>
     </div>
+    <svg class="board" width="700" height="700">
+
+    </svg>
     <script src="d3.js" charset="utf-8"></script>
     <script src='watchout.js'></script>
   </body>
 </html>
+<!--         <defs>
+          <pattern id="asteroid" x="0" y="0" height="40" width="40" patternUnits="userSpaceOnUse">
+          <image x="10" y="-5" height="40" width="40" xlink:href="asteroid_small.png"></image>
+          </pattern>
+        </defs>
+
+        <circle cx="150" cy="50" r="25" fill="url(#asteroid)"/>
+ -->
