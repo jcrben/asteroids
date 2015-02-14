@@ -29,7 +29,7 @@ Game.prototype.createAsteroids = function(amount) {
 };
 Game.prototype.fireLazer = function(){
   var x = this.player[0][0].cx.animVal.value;
-  var y = this.player[0][0].cy.animVal.value;
+  var y = this.player[0][0].cy.animVal.value-25;
 
 
   this.lazer = this.board.selectAll()
@@ -109,7 +109,7 @@ Game.prototype.setBoard = function(asteroids){
           var lazerY = context.lazer[0][i].y.animVal.value;
           if(Math.abs(lazerX - enemyX) < 25 && Math.abs(lazerY - enemyY) < 25){
 
-            d3.select(this).transition().attr('cy', '-50');
+            d3.select(this).transition().duration(100).attr('cy', '-50');
             context.lazer[0][i].remove();
           }
         }
