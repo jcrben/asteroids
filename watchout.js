@@ -6,9 +6,10 @@ var Game = function(){
   this.board = d3.select('.board');
   this.enemies = undefined;
   this.player = undefined;
-
+  this.lazer = undefined;
   this.setBoard(this.createAsteroids(10));
   this.change();
+
 }
 
 
@@ -19,7 +20,27 @@ Game.prototype.createAsteroids = function(amount) {
   }
   return results;
 };
+Game.prototype.fireLazer = function(){
+  var x = this.player[0][0].cx.animVal.value;
+  var y = this.player[0][0].cy.animVal.value;
 
+  this.lazer = this.board.selectAll()
+                    .data([[x, y]])
+                    .enter()
+                    .append('svg:rect')
+                    .attr({
+                      x:function(b){ return b[0]; },
+                      y:function(b){ return b[1]; },
+                      width:"3",
+                      height:"10",
+                      style:"fill:white;"
+                    })
+                    .transition()
+                    .duration(1000)
+                    .attr({
+                      y: 0
+                    });
+}
 Game.prototype.setBoard = function(asteroids){
   this.enemies = this.board.selectAll()
                       .data(asteroids)
