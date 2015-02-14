@@ -80,6 +80,14 @@ Game.prototype.setBoard = function(asteroids){
         console.log('hit');
         context.collision++;
         context.score = 0;
+
+        var obj = document.getElementsByClassName('board');
+        obj[0].style.backgroundColor = "red";
+        var turnBack = function(){
+          obj[0].style.backgroundColor = "black";
+        }
+        setTimeout( turnBack, 100 );
+
       }
     });
 
