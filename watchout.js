@@ -10,7 +10,14 @@ var Game = function(){
   this.setBoard(this.createAsteroids(10));
   this.change();
 
-}
+  var fn = function(e) {
+    if(e.which === 32){
+      this.fireLazer();
+    }
+  };
+  window.onkeypress = fn.bind(this);
+
+};
 
 
 Game.prototype.createAsteroids = function(amount) {
@@ -23,6 +30,7 @@ Game.prototype.createAsteroids = function(amount) {
 Game.prototype.fireLazer = function(){
   var x = this.player[0][0].cx.animVal.value;
   var y = this.player[0][0].cy.animVal.value;
+
 
   this.lazer = this.board.selectAll()
                     .data([[x, y]])
@@ -39,8 +47,9 @@ Game.prototype.fireLazer = function(){
                     .duration(1000)
                     .attr({
                       y: 0
-                    });
-}
+                    }).remove();
+};
+
 Game.prototype.setBoard = function(asteroids){
   this.enemies = this.board.selectAll()
                       .data(asteroids)
@@ -63,10 +72,10 @@ Game.prototype.setBoard = function(asteroids){
                   var y = d3.event.y;
 
                   if(x < 675 && x > 25){
-                    context.player.attr('cx', x)
+                    context.player.attr('cx', x);
                   }
                   if(y < 675 && y > 25){
-                    context.player.attr('cy', y)
+                    context.player.attr('cy', y);
                   }
                 })
              .on('dragend', function() {});
@@ -94,6 +103,17 @@ Game.prototype.setBoard = function(asteroids){
       var enemyY = enemy.attr('cy');
       var x = context.player[0][0].cx.animVal.value;
       var y = context.player[0][0].cy.animVal.value;
+      if(context.lazer !== undefined){
+        for(var i = 0; i < context.lazer[0].length; i++){
+          var lazerX = context.lazer[0][i].x.animVal.value;
+          var lazerY = context.lazer[0][i].y.animVal.value;
+          if(Math.abs(lazerX - enemyX) < 25 && Math.abs(lazerY - enemyY) < 25){
+
+            d3.select(this).transition().attr('cy', '-50');
+            context.lazer[0][i].remove();
+          }
+        }
+      }
       if(context.score > context.highScore){
         context.highScore = context.score;
       }
@@ -106,12 +126,12 @@ Game.prototype.setBoard = function(asteroids){
         obj[0].style.backgroundColor = "red";
         var turnBack = function(){
           obj[0].style.backgroundColor = "black";
-        }
+        };
         setTimeout( turnBack, 100 );
 
       }
-    });
 
+    });
     d3.select('#current').text(context.score);
     d3.select('#collisions').text(context.collision);
     d3.select('#high').text(context.highScore);
@@ -119,7 +139,7 @@ Game.prototype.setBoard = function(asteroids){
     return false;
   });
 
-}
+};
 
 Game.prototype.transition = function(arr){
   this.board.selectAll('.asteroid')
@@ -134,7 +154,8 @@ Game.prototype.transition = function(arr){
     })
     .attr('r', '25')
     .attr('filter', 'url(#rock)');
-}
+};
+
 Game.prototype.createPlayer = function() {
   return [[Math.floor((window.innerHeight-20)/2),
         Math.floor((window.innerWidth-20)/2)]];
