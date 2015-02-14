@@ -120,9 +120,6 @@ Game.prototype.setBoard = function(asteroids){
       if(context.lazer !== undefined){
         var laz = d3.selectAll('.lazer')[0];
         for(var i = 0; i < laz.length; i++){
-          // console.log(laz[i]);
-
-          // var lazerX = d3.lazer[0][i].x.animVal.value;
           var lazerY = laz[i].y.animVal.value;
           var lazerX = laz[i].x.animVal.value;
           if(Math.abs(lazerX - enemyX) < 25 && Math.abs(lazerY - enemyY) < 25){
@@ -136,7 +133,6 @@ Game.prototype.setBoard = function(asteroids){
         context.highScore = context.score;
       }
       if(Math.abs(x - enemyX) < 50 && Math.abs(y - enemyY) < 50){
-        console.log('hit');
         context.collision++;
         context.score = 0;
 
@@ -155,7 +151,6 @@ Game.prototype.setBoard = function(asteroids){
     d3.select('#high').text(context.highScore);
     context.ammu = parseInt(d3.select('#ammu')[0][0].value);
 
-    console.log(context.ammu);
 
     if(context.ammu === -1){
       d3.select('#ammuAmount').text('Unlimited');
@@ -210,7 +205,6 @@ Game.prototype.change = function(){
                             });
   }else if(this.num < current_asteroids){
     var dif = current_asteroids - this.num;
-    console.log(dif);
     this.board.selectAll('.asteroid').data(d3.range(this.num)).exit().remove();
   }
   this.transition(asteroids);
