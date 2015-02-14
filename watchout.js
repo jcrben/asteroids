@@ -7,7 +7,8 @@ var Game = function(){
   this.enemies = undefined;
   this.player = undefined;
   this.lazer = undefined;
-  this.setBoard(this.createAsteroids(10));
+  this.num = 10;
+  this.setBoard(this.createAsteroids(this.num));
   this.change();
 
   var fn = function(e) {
@@ -33,6 +34,7 @@ Game.prototype.createAsteroids = function(amount) {
   }
   return results;
 };
+
 Game.prototype.fireLazer = function(){
   var x = this.player[0][0].cx.animVal.value;
   var y = this.player[0][0].cy.animVal.value-25;
@@ -104,7 +106,8 @@ Game.prototype.setBoard = function(asteroids){
 
 
   d3.timer(function(){
-    context.enemies.each(function () {
+    enemies = d3.selectAll('.asteroid');
+    enemies.each(function () {
       var enemy = d3.select(this);
       var enemyX = enemy.attr('cx');
       var enemyY = enemy.attr('cy');
@@ -120,6 +123,7 @@ Game.prototype.setBoard = function(asteroids){
           var lazerX = laz[i].x.animVal.value;
           if(Math.abs(lazerX - enemyX) < 25 && Math.abs(lazerY - enemyY) < 25){
             laz[i].remove();
+            context.num++;
             d3.select(this).transition().duration(100).attr('cy', '-50');
           }
         }
@@ -173,7 +177,25 @@ Game.prototype.createPlayer = function() {
 
 
 Game.prototype.change = function(){
-  var asteroids = this.createAsteroids(10);
+  this.num = d3.select('#enemies')[0][0].value;
+  var asteroids = this.createAsteroids(this.num);
+  var current_asteroids = d3.selectAll('.asteroid')[0].length;
+  if(this.num > current_asteroids){
+    this.board.selectAll().data(this.createAsteroids(this.num - current_asteroids))
+                      .enter()
+                      .append('svg:circle')
+                      .attr({
+                              class: 'asteroid',
+                              cx : function(d){ return d[1]; },
+                              cy : function(d){ return d[0]; },
+                              r : 25,
+                              filter : 'url(#rock)'
+                            });
+  }else if(this.num < current_asteroids){
+    var dif = current_asteroids - this.num;
+    console.log(dif);
+    this.board.selectAll('.asteroid').data(d3.range(this.num)).exit().remove();
+  }
   this.transition(asteroids);
   setTimeout(this.change.bind(this), 1000);
 };
