@@ -12,7 +12,13 @@ var Game = function(){
 
   var fn = function(e) {
     if(e.which === 32){
-      this.fireLazer();
+      if(this.lazer !== undefined){
+        if(d3.selectAll('.lazer')[0].length > -1){
+          this.fireLazer();
+        }
+      }else{
+        this.fireLazer();
+      }
     }
   };
   window.onkeypress = fn.bind(this);
@@ -37,8 +43,9 @@ Game.prototype.fireLazer = function(){
                     .enter()
                     .append('svg:rect')
                     .attr({
-                      x:function(b){ return b[0]; },
-                      y:function(b){ return b[1]; },
+                      class: 'lazer',
+                      x:function(d){ return d[0]; },
+                      y:function(d){ return d[1]; },
                       width:"3",
                       height:"10",
                       style:"fill:white;"
@@ -46,7 +53,7 @@ Game.prototype.fireLazer = function(){
                     .transition()
                     .duration(1000)
                     .attr({
-                      y: 0
+                      y: -10
                     }).remove();
 };
 
@@ -104,13 +111,16 @@ Game.prototype.setBoard = function(asteroids){
       var x = context.player[0][0].cx.animVal.value;
       var y = context.player[0][0].cy.animVal.value;
       if(context.lazer !== undefined){
-        for(var i = 0; i < context.lazer[0].length; i++){
-          var lazerX = context.lazer[0][i].x.animVal.value;
-          var lazerY = context.lazer[0][i].y.animVal.value;
-          if(Math.abs(lazerX - enemyX) < 25 && Math.abs(lazerY - enemyY) < 25){
+        var laz = d3.selectAll('.lazer')[0];
+        for(var i = 0; i < laz.length; i++){
+          // console.log(laz[i]);
 
+          // var lazerX = d3.lazer[0][i].x.animVal.value;
+          var lazerY = laz[i].y.animVal.value;
+          var lazerX = laz[i].x.animVal.value;
+          if(Math.abs(lazerX - enemyX) < 25 && Math.abs(lazerY - enemyY) < 25){
+            laz[i].remove();
             d3.select(this).transition().duration(100).attr('cy', '-50');
-            context.lazer[0][i].remove();
           }
         }
       }
