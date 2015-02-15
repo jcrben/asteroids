@@ -3,8 +3,9 @@
 /* Note: an asteroid image is included in this repo.
 Feel free to use it if you like. */
 .board{
+  background-image: url('bg.gif');
   background-color: black;
-  border: 1px solid black;
+  border: 10px solid black;
 }
 .scoreboard{
   width: 250px;
@@ -21,9 +22,9 @@ Feel free to use it if you like. */
   -webkit-transform: scale(.2);
   transform: scale(.2);
 }
-
 .player{
   border: 20px solid red;
   border-radius: 20px;
   position: absolute;
+  z-index: 1;
 }

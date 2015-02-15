@@ -4,49 +4,37 @@ var Game = function(){
   this.highScore = 0;
   this.collision = 0;
   this.board = d3.select('.board');
-  this.enemies = undefined;
-  this.player = undefined;
-  this.lazer = undefined;
-  this.num = 10;
+  this.enemy_num = 10;
   this.ammu = -1;
-  this.setBoard(this.createAsteroids(this.num));
-  this.change();
+  this.setBoard(this.createAsteroids(this.enemy_num));
+  this.changeHardness();
 
-  var fn = function(e) {
+  var fireKey = function(e) {
     if(e.which === 32){
-      if(this.lazer !== undefined){
-
-        if(this.ammu === -1){
-          this.fireLazer();
-        }else if(d3.selectAll('.lazer')[0].length < this.ammu){
-          this.fireLazer();
-        }
-      }else{
+      if(this.ammu === -1){
+        this.fireLazer();
+      }else if(d3.selectAll('.lazer')[0].length < this.ammu){
         this.fireLazer();
       }
     }
   };
-  window.onkeypress = fn.bind(this);
-
+  window.onkeypress = fireKey.bind(this);
 };
-
 
 Game.prototype.createAsteroids = function(amount) {
   var results = [];
   for(var i = 0; i < amount; i++){
-    results.push([(Math.floor(Math.random() * (650)))+25, (Math.floor(Math.random() * (650)))+25]);
+    results.push([(Math.floor(Math.random() * (650)))+25,
+                  (Math.floor(Math.random() * (650)))+25]);
   }
   return results;
 };
 
 Game.prototype.fireLazer = function(){
-  var x = this.player[0][0].cx.animVal.value;
-  var y = this.player[0][0].cy.animVal.value-25;
+  var y = d3.select('.player').attr('cy')-25;
+  var x = d3.select('.player').attr('cx');
 
-
-  this.lazer = this.board.selectAll()
-                    .data([[x, y]])
-                    .enter()
+  this.board.selectAll().data([[x, y]]).enter()
                     .append('svg:rect')
                     .attr({
                       class: 'lazer',
@@ -56,27 +44,20 @@ Game.prototype.fireLazer = function(){
                       height:"10",
                       style:"fill:white;"
                     })
-                    .transition()
-                    .duration(1000)
-                    .attr({
-                      y: -10
-                    }).remove();
+                    .transition().duration(1000).attr({ y: -10 }).remove();
 };
 
 Game.prototype.setBoard = function(asteroids){
-  this.enemies = this.board.selectAll()
-                      .data(asteroids)
-                      .enter()
+  this.board.selectAll().data(asteroids).enter()
                       .append('svg:circle')
                       .attr({
-                              class: 'asteroid',
-                              cx : function(d){ return d[1]; },
-                              cy : function(d){ return d[0]; },
-                              r : 25,
-                              filter : 'url(#rock)'
-                            });
+                        class: 'asteroid',
+                        cx : function(d){ return d[1]; },
+                        cy : function(d){ return d[0]; },
+                        r : 25,
+                        filter : 'url(#rock)'
+                      });
 
-  var context = this;
 
   var drag = d3.behavior.drag()
                 .on('dragstart', function(){})
@@ -85,115 +66,104 @@ Game.prototype.setBoard = function(asteroids){
                   var y = d3.event.y;
 
                   if(x < 675 && x > 25){
-                    context.player.attr('cx', x);
+                    d3.select('.player').attr('cx', x)
                   }
                   if(y < 675 && y > 25){
-                    context.player.attr('cy', y);
+                    d3.select('.player').attr('cy', y)
                   }
                 })
-             .on('dragend', function() {});
+                .on('dragend', function() {});
 
-  this.player = this.board.selectAll()
-                     .data([[350, 350]])
-                     .enter()
+  this.board.selectAll().data([[350, 350]]).enter()
                      .append('svg:circle')
-                     .attr('class', 'player')
-                     .attr('cx', function(d){
-                       return d[1];
+                     .attr({
+                        class:'player',
+                        cx: function(d){ return d[1]; },
+                        cy: function(d){ return d[0]; },
+                        r : '25',
+                        filter: 'url(#player)'
                      })
-                     .attr('cy', function(d){
-                       return d[0];
-                     })
-                     .attr('r', '25')
-                     .attr('filter', 'url(#player)')
                      .call(drag);
 
 
   d3.timer(function(){
-    enemies = d3.selectAll('.asteroid');
-    enemies.each(function () {
+
+    d3.selectAll('.asteroid').each(function () {
       var enemy = d3.select(this);
       var enemyX = enemy.attr('cx');
       var enemyY = enemy.attr('cy');
-      var x = context.player[0][0].cx.animVal.value;
-      var y = context.player[0][0].cy.animVal.value;
-      if(context.lazer !== undefined){
-        var laz = d3.selectAll('.lazer')[0];
-        for(var i = 0; i < laz.length; i++){
-          var lazerY = laz[i].y.animVal.value;
-          var lazerX = laz[i].x.animVal.value;
-          if(Math.abs(lazerX - enemyX) < 25 && Math.abs(lazerY - enemyY) < 25){
-            laz[i].remove();
-            context.num++;
-            d3.select(this).transition().duration(100).attr('cy', '-50');
-          }
+
+      var x = d3.select('.player').attr('cx');
+      var y = d3.select('.player').attr('cy');
+
+
+      d3.selectAll('.lazer').each(function(){
+        var laz = d3.select(this);
+        var lazX = laz.attr('x');
+        var lazY = laz.attr('y');
+        if(Math.abs(lazX - enemyX) < 25 && Math.abs(lazY - enemyY) < 25){
+          laz.remove();
+          enemy.transition().duration(100).attr('cy', '-50');
         }
+      });
+
+      if(game.score > game.highScore){
+        game.highScore = game.score;
       }
-      if(context.score > context.highScore){
-        context.highScore = context.score;
-      }
+
       if(Math.abs(x - enemyX) < 50 && Math.abs(y - enemyY) < 50){
-        context.collision++;
-        context.score = 0;
+        game.collision++;
+        game.score = 0;
 
-        var obj = document.getElementsByClassName('board');
-        obj[0].style.backgroundColor = "red";
+        var boardElement = document.getElementsByClassName('board');
+        boardElement[0].style.borderColor = "red";
         var turnBack = function(){
-          obj[0].style.backgroundColor = "black";
+          boardElement[0].style.borderColor = "black";
         };
-        setTimeout( turnBack, 100 );
-
+        setTimeout(turnBack, 100);
       }
-
     });
-    d3.select('#current').text(context.score);
-    d3.select('#collisions').text(context.collision);
-    d3.select('#high').text(context.highScore);
-    context.ammu = parseInt(d3.select('#ammu')[0][0].value);
+
+    d3.select('#current').text(game.score);
+    d3.select('#collisions').text(game.collision);
+    d3.select('#high').text(game.highScore);
+    game.ammu = parseInt(d3.select('#ammu')[0][0].value);
 
 
-    if(context.ammu === -1){
+    if(game.ammu === -1){
       d3.select('#ammuAmount').text('Unlimited');
-    }else if (parseInt(context.ammu) === 0){
+    }else if (game.ammu === 0){
       d3.select('#ammuAmount').text('None');
     }else {
-      d3.select('#ammuAmount').text(parseInt(context.ammu));
+      d3.select('#ammuAmount').text(game.ammu);
     }
-    d3.select('#hardnessAmount').text(context.num);
+    d3.select('#hardnessAmount').text(game.enemy_num);
 
-    context.score++;
-    return false;
+    game.score++;
   });
 
 };
 
 Game.prototype.transition = function(arr){
-  this.board.selectAll('.asteroid')
-    .data(arr)
-    .transition()
-    .duration(1000)
-    .attr('cx', function(d){
-      return d[1];
-    })
-    .attr('cy', function(d){
-      return d[0];
-    })
-    .attr('r', '25')
-    .attr('filter', 'url(#rock)');
+  this.board.selectAll('.asteroid').data(arr)
+                  .transition().duration(1000)
+                  .attr({
+                    cx : function(d){ return d[1]; },
+                    cy : function(d){ return d[0]; },
+                    r : '25',
+                    filter : 'url(#rock)'
+                  });
 };
 
-Game.prototype.createPlayer = function() {
-  return [[Math.floor((window.innerHeight-20)/2),
-        Math.floor((window.innerWidth-20)/2)]];
-};
+Game.prototype.changeHardness = function(){
 
+  this.enemy_num = d3.select('#enemies')[0][0].value;
 
-Game.prototype.change = function(){
-  this.num = d3.select('#enemies')[0][0].value;
-  var asteroids = this.createAsteroids(this.num);
+  var asteroids = this.createAsteroids(this.enemy_num);
   var current_asteroids = d3.selectAll('.asteroid')[0].length;
-  if(this.num > current_asteroids){
-    this.board.selectAll().data(this.createAsteroids(this.num - current_asteroids))
+
+  if(this.enemy_num > current_asteroids){
+      this.board.selectAll().data(this.createAsteroids(this.enemy_num - current_asteroids))
                       .enter()
                       .append('svg:circle')
                       .attr({
@@ -203,12 +173,12 @@ Game.prototype.change = function(){
                               r : 25,
                               filter : 'url(#rock)'
                             });
-  }else if(this.num < current_asteroids){
-    var dif = current_asteroids - this.num;
-    this.board.selectAll('.asteroid').data(d3.range(this.num)).exit().remove();
+  }else if(this.enemy_num < current_asteroids){
+    var dif = current_asteroids - this.enemy_num;
+    this.board.selectAll('.asteroid').data(d3.range(this.enemy_num)).exit().remove();
   }
   this.transition(asteroids);
-  setTimeout(this.change.bind(this), 1000);
+  setTimeout(this.changeHardness.bind(this), 1000);
 };
 
 var game = new Game();
